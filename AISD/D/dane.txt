@@ -1,0 +1,7 @@
+1
+2 2
+A B C
+A A C
+B b
+C c
+bccc

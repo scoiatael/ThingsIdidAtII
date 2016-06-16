@@ -1,0 +1,15 @@
+$ time ./stawyBin dane2.txt
+Rozwiazywanie zagadki z pliku: dane2.txt
+
+****008**
+*05*00**1
+*0*00**6*
+*0*0*1*0*
+*0*****0*
+***3*000*
+*1*00****
+2*****20*
+0*300****
+
+
+./stawyBin dane2.txt  1432,63s user 4,65s system 99% cpu 24:04,04 total

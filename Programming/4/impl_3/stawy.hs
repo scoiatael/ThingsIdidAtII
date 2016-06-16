@@ -1,0 +1,98 @@
+import qualified Data.Set
+import qualified Data.Map
+import Data.List (sortBy)
+import System.Environment(getArgs)
+
+--jesli nie dostanie nazwy programu jako argumentu to czeka az zostanie on podany na stdin
+main = do
+  a <- getArgs
+  if length a == 0 then aux1 else aux2 a
+  where
+    aux1 = getLine >>= nurikabe
+    aux2 a = nurikabe (a !! 0)
+
+--orygianlna nazwa to nurikabe - legendarny potwor udajacy sciany -> przyjalem wiec nazwe "Wall" dla pol liczbowych (zamiast stawu), a "Stream" (nie grobla) dla sciezki pomiedzy nimi: ulatwia to wyjasnienie, czemu jest on malowany DFS'em (bo tak plynie strumyk, zwykle przynajmniej)
+paintStream :: Board -> Board
+paintStream b = aux [find b (1,1) [F,S]] Data.Set.empty b
+  where
+--zwraca pierwsze pole na b od (x,y) w prawo i na dol ktorego zawartosc nalezy do t
+  find b (x,y) t =  if (getVal b (x,y)) `elem` t then (x,y) else find b ((x+1)`mod`(width b)+1, y+((x+1) `div`(width b))) t
+--zamienia wartosc wolnych pol na S przy uzyciu DFS'a (jesli te pola nie sa spojne to ktores pozostanie wolne)
+  aux [] _ b =  b
+  aux (x:xs) vis b =  if x `Data.Set.member` vis then aux xs vis b else aux (filter(\y -> getVal b y `elem` [F,S]) (neighbours b x) ++ xs) (x `Data.Set.insert` vis) (setVal b x S)
+
+--sprawdza, czy na planszy znajduje sie kwadratowa sciana: dla kazdego pola sprawdza czy kwadrat od niego na dol i prawo jest caly sciana
+hasWallSquare :: Board -> Bool
+hasWallSquare b = filter (\w -> filter (\h -> map (getVal b) [(w,h),(w+1,h),(w,h+1),(w+1,h+1)] == [S,S,S,S])[1..(height b -1)] /= []) [1..(width b-1)] /= []
+
+--sprawdza, czy na planszy jest wolne pole
+hasFreeTile :: Board -> Bool
+hasFreeTile b =  filter (==F) (Data.Map.elems (board b)) /= []
+
+--wstawia do planszy sciane opisana dana trojka intow (aux zapamietuje w zmiennej ile jeszcze pol zamalowac, w Setach: pola na ktorych byl i na ktorych juz namalowal sciane, a w tablicy kolejke pol do odwiedzenia)
+insertWall :: Board -> (Int,Int,Int) -> [Board]
+insertWall brd (a,b,c) = 
+  aux brd c Data.Set.empty Data.Set.empty $ if canBeWall brd (a,b) then [(a,b)] else []
+  where
+    aux :: Board -> Int -> Data.Set.Set (Int,Int) -> Data.Set.Set (Int,Int) -> [(Int,Int)] -> [Board]
+    aux brd 0 _ bs _ = [  paintThoseWalls brd bs]
+    aux brd _ _ _ [] = []
+    aux brd n vs bs (x:xs) = 
+      let ns = (x `Data.Set.insert` vs) in (if x `Data.Set.member` vs then [] else aux brd (n-1) ns (x `Data.Set.insert` bs) $ xs ++ filter (canBeWall brd) (neighbours brd x)) ++ (aux brd n ns bs xs) 
+    paintThoseWalls brd bs = foldl (\b p -> setVal b p W) brd (Data.Set.toList bs)
+
+--na polu mozna postawic sciane jestli lista sasiadow bedacych sciana jest pusta
+canBeWall brd = (\p -> filter (\pn -> getVal brd pn == W) (neighbours brd p) == [])
+
+--zwraca mozliwosci wstawienia do planszy scian opisanych trojkami, ktore spelniaja kryteria zadania (nie ma kwadratowych scian oraz strumyk jest spojny)
+--na koncu sprawdza czy nie ma kwadratow
+solve :: (Board, [(Int,Int,Int)]) -> [Board]
+solve (b, []) = let b' = b { board = Data.Map.map (\t -> aux t) $ board b} in if hasWallSquare b' then [] else [b']
+  where
+    aux F = S
+    aux t = t
+
+--co krok wstawia kolejny staw i sprawdza czy strumyk moze dalej byc spojny
+solve (b, (x:xs)) = concatMap (\x -> if hasFreeTile $ paintStream $ fst x then [] else solve x) 
+  $ map (\y -> (y,xs)) (insertWall b x)
+
+--wypisuje do standardowego wyjscia rozwiazania zagadki z podanego pliku
+nurikabe :: FilePath -> IO ()
+nurikabe file = do
+  f <- readFile file
+  let fstr = filter (not . (flip elem $ ['.','\n','\r'])) f; fdat = readData fstr; sol = solve fdat
+  putStr $ concatMap (\x -> (show $ Solution x (snd fdat))  ++ "\n") sol 
+
+--Free. Stream. Wall. (numbers -> walls)
+data Tile = F | S | W | N Int deriving (Eq, Read)
+instance Show Tile where
+  show F = " "
+  show S = "*"
+  show W = "0"
+  show (N i) = show i
+
+--assert $ forall w <- [1..width], h <-[1..height] (w,h) `in` board 
+data Board = B { width :: Int, height :: Int, board :: Data.Map.Map (Int,Int) Tile}
+neighbours brd (a,b) = ( if a+1 <= (width brd) then [(a+1,b)] else []) ++ (if b+1 <= (height brd) then [(a,b+1)] else []) ++  ( if a-1 > 0 then [(a-1,b)] else []) ++ ( if b-1 > 0 then [(a,b-1)] else []) 
+getVal b a = (board b) Data.Map.! a
+setVal brd a b = brd { board = Data.Map.insert a b $ (board brd) }
+
+instance Show Board where
+  show b = concatMap (\h -> "\n" ++ concatMap (\w -> show $ getVal b (w,h) ) [1..(width b)]) [1..(height b)]
+
+makeBoard :: (Int,Int) -> Board
+makeBoard (w,h) = B w h (foldl (\m hi -> foldl (\mp wi -> Data.Map.insert (wi,hi) F mp) m [1..w]) Data.Map.empty [1..h])
+
+--w celu szybszego rozwiazywania najpierw wstawia najmniejsze stawy
+readData :: String -> (Board, [(Int,Int,Int)])
+readData str = let (c,r) = head $ lex str; (cp,rp) = head $ lex r in (makeBoard (read cp :: Int, read c :: Int), map flipFstSnd $ sortByThrd $ read rp :: [(Int,Int,Int)])
+  where 
+  sortByThrd l = sortBy (\(a1,b1,c1) (a2, b2, c2) -> (c1 `compare` c2) `aux` (a1 `compare` a2) `aux` (b1 `compare` b2)) l 
+  aux EQ v = v
+  aux t _ = t
+  flipFstSnd (a,b,c) = (b,a,c)
+
+data Solution = Solution Board [(Int,Int,Int)]
+instance Show Solution where
+  show (Solution b p) = let wspmap = Data.Map.union (Data.Map.fromList $ map (\(a,b,c) -> ((a,b),N c)) p) (board b) in
+    concatMap (\h -> "\n" ++ concatMap (\w -> show $ wspmap Data.Map.! (w,h) ) [1..(width b)]) [1..(height b)]

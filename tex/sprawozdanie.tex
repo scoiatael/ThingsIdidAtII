@@ -1,0 +1,242 @@
+% Podstawowe definicje dla wszystkich dokumentów
+
+\documentclass[12pt]{mwart}
+
+\usepackage[OT4,plmath]{polski}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{color}
+\usepackage{fontspec}
+\usepackage{listings,times}
+
+\usepackage{bbm}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=black]{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+
+\graphicspath{{images/}}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\usepackage{multicol}
+
+\usepackage{lmodern} \normalfont
+
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+
+\usepackage{caption}
+
+\setcounter{secnumdepth}{5}
+
+\begin{document}
+\begin{centering}
+  {\Large \textbf{Sprawozdanie}}\\
+  Autorzy: Łukasz Czapliński, Diana Czepirska \\ 
+  Kierunek: Informatyka Rok: 3 Rok akademicki: 2013/2014 Semestr: zimowy
+  {\large \textbf{Ćwiczenie nr 26:  Bramki i układy logiczne}}\\
+  Prowadzący ćwiczenia: dr Radosław Wasilewski \\
+  Grupa: 1; wtorek 16:00 - 19:00 \\
+  Data: 2013-12-17 \\
+\end{centering}
+\section{Wstęp teoretyczny}
+Komputery działają użwając jedynie dwóch cyfr $0$ i $1$. Dzięki temu budowa komputerów może być stosunkowo prosta: operują na dwóch stanach (wysokim oraz niskim), a wszystkie operacje są odpowiednikami działań w logice Boole'a.\\
+Prowadzi to jednak do problemu: jak reprezentować liczby? Człowiek przyzwyczaił się do liczenia używając liczb naturalnych (potem całkowitych, rzeczywistych itd.) oraz systemu dziesiętnego. Jak nauczyć tego komputer? Rozważymy tutaj problem liczb naturalnych.
+\subsection{Kod Graya}
+Oczywiste jest, że do reprezentacji każdej liczby potrzebna będzie sekwencja wartości $0$ i $1$. Pozostaje rozważyć, jaka sekwencja ma odpowiadać jakiej liczbie. Kod jest takim właśnie mapowaniem: z pewnego podzbioru liczb naturalnych (ciągu następujących po sobie liczb, zaczynającego się od 0) na sekwencję $0$ i $1$.\\
+Najbardziej znanym kodem tego typu jest kod binarny. Reprezentacja liczby w tym kodzie to ciąg cyfr ($0$ i $1$), z których każda jest mnożnikiem kolejnych potęg dwójki (tak jak w systemie dziesiętnym - każda cyfra jest mnożnikiem kolejnych potęg dziesiątki).\\
+Kodowanie binarne nie jest jednak odporne na błędy. Pomyłka podczas transmisji jednego bitu może powodować błąd względny tym większy, im starszy był to bit. O wiele lepiej byłoby jeśli kolejne liczby różniłyby się tylko jednym bitem. Wówczas pomyłka w transmisji zwykle powoduje o wiele mniejsze błędy. Kod Graya jest właśnie takim kodowaniem. Przykład dla 4 bitów: Tabela~\ref{T2}.
+
+\begin{table}[hbt!]
+\begin{center}
+\begin{tabular}{r | l}
+  Liczba  & Kod \\
+  \hline
+		0	&	0000 \\
+		1 & 0001 \\
+		2 & 0011 \\
+		3 & 0010 \\
+		4 & 0110 \\
+		5 & 0111 \\
+		6 & 0101 \\
+		7 & 0100 \\
+		8 & 1100 \\
+		9 & 1101 \\
+		10 & 1111 \\
+		11 & 1110 \\
+		12 & 1010 \\
+		13 & 1011 \\
+		14 & 1001 \\
+		15 & 1000 \\
+  \hline
+  \multicolumn{2}{|c|}{itd.} \\
+  \hline
+\end{tabular}
+\caption{Kod Graya dla sekwencji 4-bitowej}
+\label{T2}
+\end{center}
+\end{table}
+
+\subsection{Kontrola parzystości}
+Odporność na błędy jest kluczowym problemem w systemach komputerowych. Warto więc rozważyć układy mające na celu znajdywanie i ewentualną korekcję błędów. Najprostszym (i często stosowanym w złożonych systemach) rozwiązaniem jest kontrola przystości. Zlicza się ilość $1$ modulo 2 w danym ciągu. Wówczas można sprawdzić, czy w przesyłanym ciągu wystąpiła nieparzysta ilość błędów -- pozwala to na uniknięcie połowy błędów. \\
+\indent W tym celu używa się bramki XOR. Spełnia ona następującą funkcję: Tabela~\ref{T3} i~ma następujący symbol: Rysunek~\ref{F1}.
+\begin{table}[hbt!]
+\begin{center}
+  \begin{tabular}{c | c | c}
+    y|x & 0 & 1 \\
+    \hline
+    0   & 0 & 1 \\ 
+    1   & 1 & 0 \\
+  \end{tabular}
+  \caption{Tabela wartości działania XOR}
+  \label{T3}
+\end{center}
+\end{table}
+\begin{figure}[hbt!]
+\begin{center}
+  \includegraphics{XOR.png}
+  \caption{Symbol bramki XOR}
+  \label{F1}
+\end{center}
+\end{figure}
+\subsection{Układy kombinacyjne}
+Układy kombinacyjne to rodzaj układów cyfrowych (złożonych z bramek logicznych), w których stan wyjść zależy wyłącznie od stanu wejść (inaczej niż w przypadku układów sekwencyjnych - tam stan wyjść zależy od stanu wejść oraz od poprzedniego stanu wyjść). Stan wyjść w układach kombinacyjnych można opisać za pomocą funkcji boolowskich (w przeciwieństwie do układów sekwencyjnych). W układach tych nie występuje sprzężenie zwrotne.
+
+\subsection{Zjawisko hazardu}
+Jest to zjawisko występujące w układach cyfrowych, spowodowane niezerowym czasem propagacji sygnałów przez bramki logiczne. Zjawisko to jest niekorzystne, może bowiem spowodować błędne stany na wyjściach układów cyfrowych.
+
+\section{Doświadczenia i obserwacje}
+\subsection{Układ zamieniający kod dziesiętny na kod Graya}
+\subsubsection{Cel}
+Wykonanie odpowiedniego układu, nauka lutowania.
+\subsubsection{Przebieg}
+\begin{figure}[hbt!]
+  \includegraphics[width=\textwidth]{gray.png}
+  \caption{Układ zamieniający cyfry dziesiętne na kod Graya}
+  \label{F2}
+\end{figure}
+\begin{enumerate}
+  \item Zlutowaliśmy układ wg schematu (Rysunek~\ref{F2}).
+	\item Przetestowaliśmy działanie układu dla cyfr $0$-$9$.
+  \item Na podstawie wykonanych testów zapisaliśmy tabelę kodowania (Tabela~\ref{T4}).
+	
+  \begin{table}[hbt!]
+	\begin{center}
+  \begin{tabular}{r | l}
+    Cyfra   & Kod \\
+    \hline
+    0 & 0000 \\  
+		1 & 0001 \\ 
+		2 & 0011 \\  
+		3 & 0010 \\  
+		4 & 0110 \\
+    5 & 0111 \\  
+		6 & 0101 \\
+		7 & 0100 \\ 
+		8 & 1100 \\ 
+		9 & 1101 \\
+  \end{tabular}
+  \caption{Zamiana cyfr dziesiętnych na kod Graya}
+  \label{T4}
+	\end{center}
+  \end{table}
+\end{enumerate}
+\subsubsection{Wnioski}
+\begin{enumerate}
+  \item Kod Graya jest bardziej odporny na błędy niż kod binarny (złe wykonanie jednego lutu zmieniało wynik tylko o 1).
+	\item Kod Graya można rozszerzać podobnie jak binarny - dodając $0$ z przodu. 2 to $11$, $0011$, $0000011$ itd.
+  \item Zamianę kodowania można wykonać jedynie diodami.
+\end{enumerate}
+\subsection{Układy logiczne}
+\subsubsection{Cel}
+Wykonać układ kontroli parzystości, zbudować oraz odkryć zastosowanie układów kombinacyjnych (Rysunek~\ref{F3}), zmierzyć czas propagacji sygnału przez bramki NOT i NAND.
+
+\subsubsection{Przebieg}
+\paragraph{Kontrola}\textbf{parzystości}\\
+\begin{enumerate}
+	\item Zaprojektowaliśmy układ kontroli parzystości słowa 8-bitowego za pomocą bramek XOR (Rysunek ~\ref{F6}).
+	\item Zbudowaliśmy zaprojektowany układ korzystając z zestawu UNILOG.
+	\item Przetestowaliśmy działanie układu, sporządziliśmy tabelę prawdy: Tabela ~\ref{T7}
+\end{enumerate}
+\begin{figure}[hbt!]
+  \includegraphics[width=\textwidth]{konP.png}
+  \caption{Układ kontroli parzystości słowa 4-bitowego}
+  \label{F6}
+\end{figure}
+\begin{table}[hbt!]
+\begin{center}
+  \begin{tabular}{l | c}
+    A\hspace{2 mm}B\hspace{2 mm}C\hspace{2 mm}D\hspace{2 mm}E\hspace{2 mm}F\hspace{2 mm}G\hspace{2 mm}H & Q \\
+    \hline
+    0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm} & 1\\ 
+    0\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm} & 0\\ 
+		1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm} & 1\\
+		0\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm} & 1\\ 
+		0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm} & 0\\ 
+		1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}1\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm}0\hspace{3 mm} & 1\\ 
+  \end{tabular}
+  \caption{Tabela prawdy układu kontroli parzystości}
+  \label{T7}
+\end{center}
+\end{table}
+\paragraph{Układy}\textbf{kombinacyjne}\\
+\begin{enumerate}
+	\item Zbudowaliśmy układy kombinacyjne na podstawie schematu: Rysunek~\ref{F3}
+	\item Wyznaczyliśmy eksperymantalnie tabele prawdy obu układów: Tabela~\ref{T5}, Tabela~\ref{T6}
+\end{enumerate}
+\begin{figure}[hbt!]
+  \includegraphics[width=\textwidth]{komb.png}
+  \caption{Układy kombinacyjne}
+  \label{F3}
+\end{figure}
+\begin{table}[hbt!]
+\begin{center}
+  \begin{tabular}{l | c}
+    A\hspace{2 mm}B\hspace{2 mm} & Q \\
+    \hline
+    0\hspace{3 mm}0\hspace{3 mm} & 0\\
+		0\hspace{3 mm}1\hspace{3 mm} & 1\\
+		1\hspace{3 mm}0\hspace{3 mm} & 1\\
+		1\hspace{3 mm}1\hspace{3 mm} & 0\\
+  \end{tabular}
+  \caption{Tabela prawdy układu kombinacyjnego a}
+  \label{T5}
+\end{center}
+\end{table}
+\begin{table}[hbt!]
+\begin{center}
+  \begin{tabular}{l | c}
+    A\hspace{2 mm}B\hspace{2 mm} & Q \\
+    \hline
+    0\hspace{3 mm}0\hspace{3 mm} & 0\\
+		0\hspace{3 mm}1\hspace{3 mm} & 1\\
+		1\hspace{3 mm}0\hspace{3 mm} & 1\\
+		1\hspace{3 mm}1\hspace{3 mm} & 0\\
+  \end{tabular}
+  \caption{Tabela prawdy układu kombinacyjnego b}
+  \label{T6}
+\end{center}
+\end{table}
+\paragraph{Czas}\textbf{propagacji}\\
+\begin{enumerate}
+	\item Zmierzyliśmy czas propagacji sygnału (za pomocą oscyloskopu) przez 4 szeregowo połączone bramki NOT (UCY 7404). Uzyskany wynik (czas propagacji przez jedną bramkę): \textbf{$8,75 ns$}
+	
+	\item Zmierzyliśmy czas propagacji sygnału (za pomocą oscyloskopu) przez 4 szeregowo połączone bramki NAND (UCY 7400). Uzyskany wynik (czas propagacji przez jedną bramkę): \textbf{$10 ns$}
+\end{enumerate}
+\begin{figure}[hbt!]
+  \includegraphics[width=\textwidth]{notdel.png}
+  \caption{Układy mierzący czas propagacji przez negatory}
+  \label{F4}
+\end{figure}
+\begin{figure}[hbt!]
+  \includegraphics[width=\textwidth]{nandel.jpg}
+  \caption{Układy mierzący czas propagacji przez bramki NAND}
+  \label{F5}
+\end{figure}
+\subsubsection{Wnioski}
+\begin{enumerate}
+  \item Układ kontroli parzystości można zbudować jedynie z bramek XOR..
+	\item Zbudowane przez nas zgodnie ze schematem układy kombinacyjne okazały się być odpowiednikami bramki logicznej XOR - mają identyczne tabele prawdy.
+  \item Czas propagacji sygnału przez bramkę NAND jest większy, niż przez bramkę NOT -- nie wystarczy pilnować, żeby wszystkie ścieżki w układzie miały tyle samo bramek logicznych: wystąpi hazard, nawet wówczas gdy jedna będzie miała dużo bramek jednego rodzaju, a druga identyczną ilość bramek innego.
+\end{enumerate}
+\end{document}

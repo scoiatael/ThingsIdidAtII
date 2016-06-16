@@ -1,0 +1,17 @@
+abc1:
+[[A,A],[B,A]]
+[[A,A],[B,B]]
+[[A,B],[B,B]]
+
+abc2:
+[[B,B,C,C],
+[A,C,C,A],
+[B,B,C,C],
+[A,C,C,A]]
+
+abc3:
+[[A,B,A,B,A,B],
+[B,A,A,B,A,B]]
+
+[[A,B,A,B,A,B],
+[B,A,A,B,B,A]]

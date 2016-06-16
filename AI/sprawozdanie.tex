@@ -1,0 +1,47 @@
+\documentclass[11pt,wide]{mwart}
+
+\usepackage[OT4,plmath]{polski}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{color}
+\usepackage{fontspec}
+\usepackage{listings,times}
+
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{url}
+
+\setmainfont{Calibri Light}
+
+\title{Sprawzdanie z zadania rozruchowego}
+\author{Łukasz Czapliński}
+\date{\today}
+
+\begin{document}
+\maketitle
+\section{Temat}
+Jako temat swojej pracy wybrałem grę w popularną grę karcianą Texas Hold'em. Nie jest ona skomplikowana: w każdym swoim ruchu gracz wybiera jeden z 3 ruchów: fold, pass lub raise. 
+Jej zasady pokrótce opisałem na końcu dokumentu.
+Opierałem się na wiedzy własnej.
+\section{Przypadki testowe}
+Pierwszy przypadek: dobry gracz, kiepskie karty na ręce, na stole w miarę niezłe karty.
+Wydaje się naturalnym, żeby teraz blefować: inni nie widzą jego kart.\\
+W czasie działania program dodatkowo pyta, czy gracz czuje się dobrze blefując (odpowiedź brzmi tak) oraz czy ma większe doświadczenie niż jego przeciwnicy (odpowiedź negatywna - gra porównywalnie długo).\\
+Wyrok systemu brzmi: \textbf{pass}.\\
+Faktycznie, skoro inni gracze grają porównywalnie długo, to mogliby przejrzeć taki blef.\\
+\indent Drugi przypadek: kiepski gracz, dobre karty na ręce, kiepskie karty na stole. Wydaje się nieźle, powinien zrobić raise lub pass.\\
+Program dopytuje się, czy możliwe jest, że pozostali gracze też będą blefować. Dodatkowo pyta teź o doświadczenie w pokerze. Otrzymuje odpowiedzi kolejno twierdzącą oraz kwalifikującą doświadczenie jako znikome.\\
+Wynik: \textbf{raise}.\\
+Nie jest to może idealna odpowiedź: bardziej pasowałby pass (jeśli ja bym grał). Jednakże agresywana gra może być tutaj dobrym rozwiązaniem: pozostali nie powinni się spodziewać takiego zagrania po mało doświadczonym graczu.\\
+\section{Ocena i wnioski}
+Jak wynika z podsumowania przypadków testowych, trudno jednoznacznie ocenić trafność odpowiedzi: należałoby go wnikliwie przetestować w praktyce. Jeśli okazałoby się, że jest nieźle to można nawet na takim programie zarabiać grając przez internet w pokera - najlepiej w innym kraju, gdzie hazard nie jest zakazany.\\
+Prace rozwojowe powinny celować w rozgrywanie pełnych gier - łączyć odpowiedzi z kolejnych rozdań, by poprawiać swoje wyniki oraz by były bardziej konsekwentne. 
+\pagebreak
+\section{Zasady Texas Hold'em}
+Na stole znajduje się pewna pula pieniędzy do której każdy z graczy dokłada. Zabiera ją gracz, który wygra dane rozdanie. Każdy gracz ma 2 karty. Dodatkowo na stole pojawiąją się karty - do 4. Celem jest uzyskanie jak najlepszej kombinacji kart swoich z tymi na stole.
+\begin{itemize}
+  \item [\textbf{Ruchy gracza}]
+  \item fold - gracz porzuca to rozdanie - przestaje się w nim liczyć.
+  \item pass - gracz nie zwiększa stawki - wyrównuje do obecnej i gra dalej.
+  \item raise - gracz zwiększa stawkę - pozostali muszą wyrównać.
+\end{itemize}
+\end{document}
+

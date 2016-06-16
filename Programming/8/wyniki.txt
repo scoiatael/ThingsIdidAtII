@@ -1,0 +1,12 @@
+[
+AA
+BA,
+AA
+BB,
+AB
+BB]
+[
+BBCC
+ACCA
+BBCC
+ACCA]

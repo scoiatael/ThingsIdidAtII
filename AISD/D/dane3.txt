@@ -1,0 +1,18 @@
+3
+1 1
+A B C
+H a
+aaaa
+3 2
+A B C
+D E F
+B B B
+B b
+C c
+bbbbc
+3 1
+A B C
+D E F
+B B B
+B b 
+bbbbc
